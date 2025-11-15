@@ -17,7 +17,8 @@ public class FileStorageStub implements FileStorage {
 
 	private static final Logger log = LoggerFactory.getLogger(FileStorageStub.class);
 
-	public Optional<FilePointer> findFile(UUID uuid) {
+        @Override
+        public Optional<FilePointer> findFile(UUID uuid) {
 		log.debug("Downloading {}", uuid);
 		if (uuid.equals(TXT_FILE_UUID)) {
 			return Optional.of(TXT_FILE);

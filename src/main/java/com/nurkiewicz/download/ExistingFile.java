@@ -62,17 +62,17 @@ public class ExistingFile {
 		return matchingEtag || notModifiedSince;
 	}
 
-	private ResponseEntity<Resource> redirectDownload(FilePointer filePointer) {
-		try {
-			log.trace("Redirecting {} '{}'", method, filePointer);
-			return ResponseEntity
-					.status(MOVED_PERMANENTLY)
-					.location(new URI("/download/" + uuid + "/" + filePointer.getOriginalName()))
-					.body(null);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
+        private ResponseEntity<Resource> redirectDownload(FilePointer filePointer) {
+                try {
+                        log.trace("Redirecting {} '{}'", method, filePointer);
+                        return ResponseEntity
+                                        .status(MOVED_PERMANENTLY)
+                                        .location(new URI("/download/" + uuid + "/" + filePointer.getOriginalName()))
+                                        .build();
+                } catch (URISyntaxException e) {
+                        throw new IllegalArgumentException(e);
+                }
+        }
 
 	private ResponseEntity<Resource> serveDownload(FilePointer filePointer) {
 		log.debug("Serving {} '{}'", method, filePointer);
@@ -94,10 +94,10 @@ public class ExistingFile {
 		return new InputStreamResource(throttlingInputStream);
 	}
 
-	private ResponseEntity<Resource> notModified(FilePointer filePointer) {
-		log.trace("Cached on client side {}, returning 304", filePointer);
-		return response(filePointer, NOT_MODIFIED, null);
-	}
+        private ResponseEntity<Resource> notModified(FilePointer filePointer) {
+                log.trace("Cached on client side {}, returning 304", filePointer);
+                return response(filePointer, NOT_MODIFIED, null);
+        }
 
 	private ResponseEntity<Resource> response(FilePointer filePointer, HttpStatus status, Resource body) {
 		final ResponseEntity.BodyBuilder responseBuilder = ResponseEntity
@@ -112,10 +112,12 @@ public class ExistingFile {
 		return responseBuilder.body(body);
 	}
 
-	private MediaType toMediaType(com.google.common.net.MediaType input) {
-		return input.charset()
-				.transform(c -> new MediaType(input.type(), input.subtype(), c))
-				.or(new MediaType(input.type(), input.subtype()));
-	}
+        private MediaType toMediaType(com.google.common.net.MediaType input) {
+                final com.google.common.base.Optional<java.nio.charset.Charset> charset = input.charset();
+                if (charset.isPresent()) {
+                        return new MediaType(input.type(), input.subtype(), charset.get());
+                }
+                return new MediaType(input.type(), input.subtype());
+        }
 
 }

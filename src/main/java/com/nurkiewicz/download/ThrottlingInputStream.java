@@ -16,22 +16,31 @@ public class ThrottlingInputStream extends InputStream {
 	}
 
 	@Override
-	public int read() throws IOException {
-		maxBytesPerSecond.acquire(1);
-		return target.read();
-	}
+        public int read() throws IOException {
+                final int value = target.read();
+                if (value >= 0) {
+                        maxBytesPerSecond.acquire();
+                }
+                return value;
+        }
 
-	@Override
-	public int read(byte[] b) throws IOException {
-		maxBytesPerSecond.acquire(b.length);
-		return target.read(b);
-	}
+        @Override
+        public int read(byte[] b) throws IOException {
+                final int read = target.read(b);
+                if (read > 0) {
+                        maxBytesPerSecond.acquire(read);
+                }
+                return read;
+        }
 
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
-		maxBytesPerSecond.acquire(len);
-		return target.read(b, off, len);
-	}
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+                final int read = target.read(b, off, len);
+                if (read > 0) {
+                        maxBytesPerSecond.acquire(read);
+                }
+                return read;
+        }
 
 	//less important below...
 
