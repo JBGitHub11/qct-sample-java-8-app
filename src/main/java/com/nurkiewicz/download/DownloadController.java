@@ -31,27 +31,27 @@ public class DownloadController {
 	}
 
 	@RequestMapping(method = {GET, HEAD}, value = "/{uuid}")
-	public ResponseEntity<Resource> redirect(
-			HttpMethod method,
-			@PathVariable UUID uuid,
-			@RequestHeader(IF_NONE_MATCH) Optional<String> requestEtagOpt,
-			@RequestHeader(IF_MODIFIED_SINCE) Optional<Date> ifModifiedSinceOpt
-			) {
-		return findExistingFile(method, uuid)
-				.map(file -> file.redirect(requestEtagOpt, ifModifiedSinceOpt))
-				.orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
+        public ResponseEntity<Resource> redirect(
+                        HttpMethod method,
+                        @PathVariable UUID uuid,
+                        @RequestHeader(IF_NONE_MATCH) Optional<String> requestEtagOpt,
+                        @RequestHeader(IF_MODIFIED_SINCE) Optional<Date> ifModifiedSinceOpt
+                        ) {
+                return findExistingFile(method, uuid)
+                                .map(file -> file.redirect(requestEtagOpt, ifModifiedSinceOpt))
+                                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).build());
 	}
 
 	@RequestMapping(method = {GET, HEAD}, value = "/{uuid}/{filename}")
-	public ResponseEntity<Resource> download(
-			HttpMethod method,
-			@PathVariable UUID uuid,
-			@RequestHeader(IF_NONE_MATCH) Optional<String> requestEtagOpt,
-			@RequestHeader(IF_MODIFIED_SINCE) Optional<Date> ifModifiedSinceOpt
-			) {
-		return findExistingFile(method, uuid)
-				.map(file -> file.handle(requestEtagOpt, ifModifiedSinceOpt))
-				.orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
+        public ResponseEntity<Resource> download(
+                        HttpMethod method,
+                        @PathVariable UUID uuid,
+                        @RequestHeader(IF_NONE_MATCH) Optional<String> requestEtagOpt,
+                        @RequestHeader(IF_MODIFIED_SINCE) Optional<Date> ifModifiedSinceOpt
+                        ) {
+                return findExistingFile(method, uuid)
+                                .map(file -> file.handle(requestEtagOpt, ifModifiedSinceOpt))
+                                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).build());
 	}
 
 	private Optional<ExistingFile> findExistingFile(HttpMethod method, @PathVariable UUID uuid) {
